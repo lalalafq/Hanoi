@@ -8,15 +8,193 @@
 
 #import "AppDelegate.h"
 
+static int count = 0;
+
 @interface AppDelegate ()
 
+@property (nonatomic,strong)NSMutableArray * arrayX;
+@property (nonatomic,strong)NSMutableArray * arrayY;
+@property (nonatomic,strong)NSMutableArray * arrayZ;
+
 @end
+
 
 @implementation AppDelegate
 
 
+- (void)move:(NSInteger)i from:(NSString *)source to:(NSString *)target
+{
+    NSLog(@"[%d] move disk [%ld] from __%@__ to __%@__ ",++count,i,source,target);
+    if ([source isEqualToString:@"x"])
+    {
+        [self.arrayX removeObject:[NSString stringWithFormat:@"%ld",i]];
+    }
+    if ([source isEqualToString:@"y"])
+    {
+        [self.arrayY removeObject:[NSString stringWithFormat:@"%ld",i]];
+    }
+    if ([source isEqualToString:@"z"])
+    {
+        [self.arrayZ removeObject:[NSString stringWithFormat:@"%ld",i]];
+    }
+    
+    if ([target isEqualToString:@"x"])
+    {
+        [self.arrayX insertObject:[NSString stringWithFormat:@"%ld",i] atIndex:0];
+    }
+    if ([target isEqualToString:@"y"])
+    {
+        [self.arrayY insertObject:[NSString stringWithFormat:@"%ld",i] atIndex:0];
+    }
+    if ([target isEqualToString:@"z"])
+    {
+        [self.arrayZ insertObject:[NSString stringWithFormat:@"%ld",i] atIndex:0];
+    }
+    
+    NSMutableString * arrayStr = [NSMutableString stringWithString:@"["];
+    [self.arrayX enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [arrayStr appendString:obj];
+    }];
+    [arrayStr appendString:@"] "];
+    
+    [arrayStr appendString:@"["];
+    [self.arrayY enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [arrayStr appendString:obj];
+    }];
+    [arrayStr appendString:@"] "];
+    
+    [arrayStr appendString:@"["];
+    [self.arrayZ enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [arrayStr appendString:obj];
+    }];
+    [arrayStr appendString:@"] "];
+    
+    NSLog(@"%@",arrayStr);
+}
+
+- (void)hanoi:(NSInteger)n x:(NSString *)x y:(NSString *)y z:(NSString *)z
+{
+    if (n == 1)
+    {
+        [self move:1 from:x to:z];
+    }
+    else
+    {
+        [self hanoi:n-1 x:x y:y z:z];
+
+        [self move:n from:x to:y];
+
+        [self hanoi:n-1 x:z y:y z:x];
+
+        [self move:n from:y to:z];
+        
+        [self hanoi:n-1 x:x y:y z:z];
+
+    }
+}
+
+- (NSInteger)indexOfString:(NSString *)originString withSubStrig:(NSString *)subString
+{
+    NSInteger pos , i , j;
+    pos = i = 0;
+    j = 0;
+    while (i < originString.length && j < subString.length) {
+        char originChar = [originString characterAtIndex:i];
+        char subChar = [subString characterAtIndex:j];
+        if (originChar == subChar)
+        {
+            i++;
+            j++;
+        }
+        else
+        {
+            pos ++;
+            i = pos;
+            j = 0;
+        }
+        
+        count ++;
+    }
+    if (j == subString.length)
+    {
+        return pos;
+    }
+    else
+    {
+        return -1;
+    }
+}
+
+- (NSInteger)kmp_indexOfString:(NSString *)originString withSubStrig:(NSString *)subString
+{
+    NSInteger pos , i , j, offset;
+    pos = i = 0;
+    j = 0;
+    offset = 0;
+    while (i < originString.length && j < subString.length) {
+        char originChar = [originString characterAtIndex:i];
+        char subChar = [subString characterAtIndex:j];
+        if (originChar == subChar)
+        {
+            i++;
+            j++;
+            offset ++;
+        }
+        else
+        {
+            pos = pos + (offset >= 1 ? offset : 1);
+            i = pos;
+            j = 0;
+            offset = 0;
+        }
+        
+        count ++;
+    }
+    if (j == subString.length)
+    {
+        return pos;
+    }
+    else
+    {
+        if (i == originString.length)
+        {
+            //需要判断越界问题
+            return -1;
+        }
+        else
+        {
+            return -1;
+        }
+    }
+}
+
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
+    
+    float sum;
+    int i;
+    
+    sum = 0;
+    
+    for (i = 0;i<100;i++)
+    {
+        sum = sum + 0.1;
+    }
+    NSLog(@"%f",sum);
+    NSString * aa = @"a";
+    NSString * bb = @"a".mutableCopy;
+    NSMutableArray * array = [NSMutableArray array];
+    [array addObject:aa];
+    BOOL isContain = [array containsObject:bb];
+    NSLog(@"isContain:%@",isContain?@"YES":@"NO");
+    
+    NSInteger index = [self kmp_indexOfString:@"00000000000001" withSubStrig:@"001"];
+    NSLog(@"indexOfString is %ld,count is %d",index,count);
+    
+//    self.arrayX = @[@"1",@"2",@"3",@"4"].mutableCopy;
+//    self.arrayY = @[].mutableCopy;
+//    self.arrayZ = @[].mutableCopy;
+//    [self hanoi:4 x:@"x" y:@"y" z:@"z"];
     return YES;
 }
 
